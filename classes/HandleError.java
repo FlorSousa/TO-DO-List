@@ -20,4 +20,7 @@ public class HandleError {
     void Input_invalido(){
         System.out.println("VOCÊ DIGITOU ALGO INVALIDO");
     }
+    void Ex_err(Exception err){
+        System.out.println(err);
+    }
 }

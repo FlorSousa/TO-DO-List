@@ -61,7 +61,7 @@ public class Stream {
         List<String> linhasValidas = new ArrayList<>();
         String[] arr = new String[10];
         boolean error = true;
-        String fim ="err";
+        String fim ="Não existe";
         try{
             FileReader arquivo = new FileReader("C:/Users/getui/Desktop/RPG_Texto/TO-DO-List/data/save_system.txt");
             BufferedReader bytesarquivo = new BufferedReader(arquivo);
@@ -168,6 +168,8 @@ public class Stream {
         }
         return todosId;
     }
+
+    
 
     boolean procuraArquivo(){
         try{

@@ -2,6 +2,7 @@ package classes;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
+
 public class MenuClass implements Menu {
     private Boolean estado = true;
     private Boolean MenuInicial = true;
@@ -19,6 +20,7 @@ public class MenuClass implements Menu {
     private int caracteresAtividade =50;
     private int caracteresPrioridade = 8;
     private int caracteresAutor = 50;
+    
 
     @Override
     public boolean Visualizar() {
@@ -38,7 +40,7 @@ public class MenuClass implements Menu {
     public boolean trata_erro(String id, String atividade,String prioridade,String autor){
         boolean Estado = false;
         int novo_id = Integer.parseInt(id);
-        if(novo_id>=0 && novo_id<=3){
+        if(novo_id>=0 && novo_id<=8){
             if(atividade.length()<=50){
                 if(prioridade.equals("BACKLOG") || prioridade.equals("DESENVOL") || prioridade.equals("COPLETA")){
                     Estado = true;
@@ -80,46 +82,52 @@ public class MenuClass implements Menu {
     public boolean InserirNovaTarefa() {
         System.out.println("Crie um ID de 0 a 10000000");
         String id = leitor.nextLine();
-        System.out.println("Digite uma Atividade --- Max caracteres:50");
-        String atividade = leitor.nextLine();
-        System.out.println("Digite qual o estado da tarefa: 1-BACKLOG, 2-DESENVOLVIMENTO,3-COMPLETA");
-        String prioridade = leitor.nextLine();
-        prioridade = TransformPrioridade(prioridade);
-        System.out.println("Quem está criando essa tarefa?");
-        String autor = leitor.nextLine();
-        
-        if(trata_erro(id,atividade,prioridade,autor) == true){
-            
-            int EmBrancoId = caracteresId - id.length();
-            int EmBrancoAtividade = caracteresAtividade - atividade.length();
-            int EmBrancoPrioridade = caracteresPrioridade - prioridade.length();
-            int EmBrancoAutor = caracteresAutor - autor.length();
-            
-            id = mudaCampos(id,EmBrancoId);
-            atividade = mudaCampos(atividade,EmBrancoAtividade);
-            prioridade = mudaCampos(prioridade, EmBrancoPrioridade);
-            autor = mudaCampos(autor, EmBrancoAutor);
+        boolean Nao_existe_id_igual= (stream.getLinhaEspecifica(id).equals("Não existe"))?true:false;
+        if(Nao_existe_id_igual==true){
+            System.out.println("Digite uma Atividade --- Max caracteres:50");
+            String atividade = leitor.nextLine();
+            System.out.println("Digite qual o estado da tarefa: 1-BACKLOG, 2-DESENVOLVIMENTO,3-COMPLETA");
+            String prioridade = leitor.nextLine();
+            prioridade = TransformPrioridade(prioridade);
+            System.out.println("Quem está criando essa tarefa?");
+            String autor = leitor.nextLine();
 
-            Tarefa novaTarefa = new Tarefa(id,atividade,prioridade,autor);
-            tarefas.add(novaTarefa);
-
-            //Escreve em save_system
-            stream.Escreve(novaTarefa.toString());
-
-            System.out.println("Deseja criar outra tarefa?");
-            String escolha = leitor.nextLine();
+            if(trata_erro(id,atividade,prioridade,autor) == true){
             
-            if(escolha.equalsIgnoreCase("N")){
-                this.Inserindo = false;
-                this.MenuInicial = true;
+                int EmBrancoId = caracteresId - id.length();
+                int EmBrancoAtividade = caracteresAtividade - atividade.length();
+                int EmBrancoPrioridade = caracteresPrioridade - prioridade.length();
+                int EmBrancoAutor = caracteresAutor - autor.length();
+                
+                id = mudaCampos(id,EmBrancoId);
+                atividade = mudaCampos(atividade,EmBrancoAtividade);
+                prioridade = mudaCampos(prioridade, EmBrancoPrioridade);
+                autor = mudaCampos(autor, EmBrancoAutor);
+    
+                Tarefa novaTarefa = new Tarefa(id,atividade,prioridade,autor);
+                tarefas.add(novaTarefa);
+    
+                //Escreve em save_system
+                stream.Escreve(novaTarefa.toString());
+    
+                System.out.println("Deseja criar outra tarefa?(S/N)");
+                String escolha = leitor.nextLine();
+                
+                if(escolha.equalsIgnoreCase("N")){
+                    this.Inserindo = false;
+                    this.MenuInicial = true;
+                }else{
+                    this.Inserindo = true;
+                    this.MenuInicial = false;
+                }
+                return this.MenuInicial;
+            
             }else{
-                this.Inserindo = true;
-                this.MenuInicial = false;
+                return this.MenuInicial = true;
             }
-            return this.MenuInicial;
-        
         }else{
-            return this.MenuInicial = true;
+            System.out.println("Esse ID já existe");
+            return this.MenuInicial = false;
         }
         
     }
@@ -147,11 +155,19 @@ public class MenuClass implements Menu {
         }
         return this.MenuInicial = false;
     }
+    public void limpa_tela(){
+        try{
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+    
+        }catch(Exception err){
+            System.err.println(err);
+        }
+    }
 
     @Override
     public void TarefasFeitas() {
         String linha = stream.getLinhaEspecifica("00000001");
-        System.out.println(linha);
+        System.out.println(linha); 
     }
 
     @Override
@@ -173,18 +189,78 @@ public class MenuClass implements Menu {
         
     }
 
-    void UpPrioridade(String idTarefa,String linha){
-        //Acessa a linha, retira o valor que está em prioridade
-        //Verifica qual seria a proxima prioridade
-        //Muda para a proxima prioridade
-        //Sobrescreve a linha
+    String getPrioridade(String linha){
+        int estado =1;
+        String prioridade = "";
+    
+        for(int k=0;k<linha.length();k++){
+            char atual = linha.charAt(k);
+            if(estado == 1){
+                if(atual != '|'){
+                    estado =1;
+                }
+                else{
+                    estado = 2;
+                }
+            }
+            else if(estado ==2){
+                if(atual !='|'){
+                    estado =2;
+                }else{
+                    estado =3;
+                }
+            }else if(estado ==3){
+                if(atual!='|'){
+                    prioridade+=atual;
+                }else{
+                    estado =4;
+                }
+            }
+        }
+        return prioridade;
     }
 
-    void BackPrioridade(String idTarefa, String linha){
+    void MudaPrioridade(String idTarefa,String linha){
         //Acessa a linha, retira o valor que está em prioridade
-        //Verifica qual seria a anterior prioridade
-        //Muda para a anterior prioridade
+        //Muda para a nova prioridade
         //Sobrescreve a linha
+        
+        String prioridade = getPrioridade(linha);
+        System.out.println("Qual a nova prioridade?:");
+        if(prioridade.equals("BACKLOG")){
+            System.out.println("    A.Desenvolvimento");
+            System.out.println("    B.Concluida");
+            String escolha = leitor.nextLine();
+            if(escolha.equalsIgnoreCase("A")){
+
+            }else if(escolha.equalsIgnoreCase("B")){
+
+            }else{
+                handleError.optInvalida();
+            }
+        }else if(prioridade.equals("DESENVOL")){
+            System.out.println("    A.Backlog");
+            System.out.println("    A.Concluida");
+            String escolha = leitor.nextLine();
+            if(escolha.equalsIgnoreCase("A")){
+
+            }else if(escolha.equalsIgnoreCase("B")){
+
+            }else{
+                handleError.optInvalida();
+            }
+        }else{
+            System.out.println("    A.Backlog");
+            System.out.println("    A.Desenvolvimento");
+            String escolha = leitor.nextLine();
+            if(escolha.equalsIgnoreCase("A")){
+
+            }else if(escolha.equalsIgnoreCase("B")){
+
+            }else{
+                handleError.optInvalida();
+            }
+        }
     }
 
     @Override
@@ -196,13 +272,14 @@ public class MenuClass implements Menu {
             handleError.Input_invalido();
         }else{
             System.out.println(linha);
-            System.out.println("    A.Avançar prioridade");
-            System.out.println("    B.Retroceder prioridade");
+            System.out.println("    A.Alterar prioridade");
+            System.out.println("    B.Sair");
             String escolha = leitor.nextLine();
             if(escolha.equalsIgnoreCase("A")){
-                UpPrioridade(id, linha);
+                MudaPrioridade(id, linha);
             }else if(escolha.equalsIgnoreCase("B")){
-                BackPrioridade(id, linha);
+                this.MenuInicial = true;
+                this.mudandoPrioridade = false;
             }else{
                 handleError.optInvalida();
             }
