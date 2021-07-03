@@ -1,10 +1,11 @@
 package classes;
 
 public interface Menu {
-    public void Visualizar();
-    public void InserirNovaTarefa();
-    public void MostraMenu();
+    public boolean Visualizar();
+    public boolean InserirNovaTarefa();
+    public boolean MostraMenu();
     public void TarefasFeitas();
-    public void Kanbam();
-    public void pesquisaTarefa();
+    public boolean Kanbam();
+    public void MudarPrioridade();
+    public void Sair();
 }

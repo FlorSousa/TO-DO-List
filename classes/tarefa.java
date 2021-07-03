@@ -1,20 +1,41 @@
 package classes;
 
-public class tarefa {
+public class Tarefa {
     private String id;
     private String Atividade;
-    private String Hora;
+    private String Prioridade;
     private String Autor; 
 
-    public tarefa(Integer id,String Atividade,String Hora,String Autor){
-        this.id = id.toString();
+    public Tarefa(String id,String Atividade,String Prioridade,String Autor){
+        this.id = id;
         this.Atividade = Atividade;
-        this.Hora = Hora;
+        this.Prioridade = Prioridade;
         this.Autor = Autor;
     }
 
     public void SalvaTarefa(){
         //pass
+    }
+
+    public String getId(){
+        return this.id;
+    }
+
+    public String getAtividade(){
+        return this.Atividade;
+    }
+
+    public String getPrioridade(){
+        return this.Prioridade;
+    }
+
+    public String getAutor(){
+        return this.Autor;
+    }
+
+    @Override
+    public String toString(){
+        return "#"+getId() +"|"+getAtividade() +"|"+ getPrioridade() + "|"+getAutor()+"#";
     }
 
 }
