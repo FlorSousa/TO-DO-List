@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuClass implements Menu {
+    public List<Tarefa> tarefas = new ArrayList<>();
+    private HandleError handleError = new HandleError();
+    public handleFeitas handleFeitas = new handleFeitas();
+    private Minerador_de_Dados miner = new Minerador_de_Dados();
     private Boolean estado = true;
     private Boolean MenuInicial = true;
     private Boolean Visualizar = false;
@@ -14,13 +18,11 @@ public class MenuClass implements Menu {
     private Boolean mudandoPrioridade = false;
     private Scanner leitor = new Scanner(System.in);
     private Stream stream = new Stream();
-    public List<Tarefa> tarefas = new ArrayList<>();
-    private HandleError handleError = new HandleError();
     private int caracteresId=8;
     private int caracteresAtividade =50;
     private int caracteresPrioridade = 8;
     private int caracteresAutor = 50;
-    
+    public boolean Start = true;
 
     @Override
     public boolean Visualizar() {
@@ -39,8 +41,8 @@ public class MenuClass implements Menu {
 
     public boolean trata_erro(String id, String atividade,String prioridade,String autor){
         boolean Estado = false;
-        int novo_id = Integer.parseInt(id);
-        if(novo_id>=0 && novo_id<=8){
+    
+        if(id.length()>=0 && id.length()<9){
             if(atividade.length()<=50){
                 if(prioridade.equals("BACKLOG") || prioridade.equals("DESENVOL") || prioridade.equals("COPLETA")){
                     Estado = true;
@@ -106,9 +108,7 @@ public class MenuClass implements Menu {
     
                 Tarefa novaTarefa = new Tarefa(id,atividade,prioridade,autor);
                 tarefas.add(novaTarefa);
-    
-                //Escreve em save_system
-                stream.Escreve(novaTarefa.toString());
+
     
                 System.out.println("Deseja criar outra tarefa?(S/N)");
                 String escolha = leitor.nextLine();
@@ -166,8 +166,18 @@ public class MenuClass implements Menu {
 
     @Override
     public void TarefasFeitas() {
-        String linha = stream.getLinhaEspecifica("00000001");
-        System.out.println(linha); 
+        for(String atual:handleFeitas.retornaFeitos()){
+            System.out.println(atual);
+        }
+
+        System.out.println("    A.Menu Inicial");
+        String escolha = leitor.nextLine();
+        if(escolha.equalsIgnoreCase("A")){
+            this.MenuInicial = true;
+        }else{
+            limpa_tela();
+            handleError.optInvalida();
+        }
     }
 
     @Override
@@ -189,74 +199,44 @@ public class MenuClass implements Menu {
         
     }
 
-    String getPrioridade(String linha){
-        int estado =1;
-        String prioridade = "";
-    
-        for(int k=0;k<linha.length();k++){
-            char atual = linha.charAt(k);
-            if(estado == 1){
-                if(atual != '|'){
-                    estado =1;
-                }
-                else{
-                    estado = 2;
-                }
-            }
-            else if(estado ==2){
-                if(atual !='|'){
-                    estado =2;
-                }else{
-                    estado =3;
-                }
-            }else if(estado ==3){
-                if(atual!='|'){
-                    prioridade+=atual;
-                }else{
-                    estado =4;
-                }
-            }
-        }
-        return prioridade;
-    }
 
-    void MudaPrioridade(String idTarefa,String linha){
+    private void MudaPrioridade(String idTarefa,String linha){
         //Acessa a linha, retira o valor que está em prioridade
         //Muda para a nova prioridade
         //Sobrescreve a linha
         
-        String prioridade = getPrioridade(linha);
+        String prioridade = miner.getPrioridade(linha);
         System.out.println("Qual a nova prioridade?:");
-        if(prioridade.equals("BACKLOG")){
+        if(prioridade.equalsIgnoreCase("BACKLOG ")){
             System.out.println("    A.Desenvolvimento");
             System.out.println("    B.Concluida");
             String escolha = leitor.nextLine();
             if(escolha.equalsIgnoreCase("A")){
-
+                miner.mudancaPrioridade(linha,"DESENVOL");
             }else if(escolha.equalsIgnoreCase("B")){
-
+                miner.mudancaPrioridade(linha,"CONCLUID");
             }else{
                 handleError.optInvalida();
             }
         }else if(prioridade.equals("DESENVOL")){
             System.out.println("    A.Backlog");
-            System.out.println("    A.Concluida");
+            System.out.println("    B.Concluida");
             String escolha = leitor.nextLine();
             if(escolha.equalsIgnoreCase("A")){
-
+                miner.mudancaPrioridade(linha,"BACKLOG ");
             }else if(escolha.equalsIgnoreCase("B")){
-
+                miner.mudancaPrioridade(linha,"CONCLUID");
             }else{
                 handleError.optInvalida();
             }
         }else{
             System.out.println("    A.Backlog");
-            System.out.println("    A.Desenvolvimento");
+            System.out.println("    B.Desenvolvimento");
             String escolha = leitor.nextLine();
             if(escolha.equalsIgnoreCase("A")){
-
+                miner.mudancaPrioridade(linha,"BACKLOG ");
             }else if(escolha.equalsIgnoreCase("B")){
-
+                miner.mudancaPrioridade(linha,"DESENVOL");
             }else{
                 handleError.optInvalida();
             }
@@ -271,6 +251,7 @@ public class MenuClass implements Menu {
         if(linha == "err"){
             handleError.Input_invalido();
         }else{
+            limpa_tela();
             System.out.println(linha);
             System.out.println("    A.Alterar prioridade");
             System.out.println("    B.Sair");
@@ -290,7 +271,9 @@ public class MenuClass implements Menu {
 
     @Override
     public void Sair() {
-        System.out.println("saindo");   
+        limpa_tela();  
+        stream.Escreve(tarefas);
+        System.out.println("Obrigado por utilizar"); 
         this.estado = false;
 
         
@@ -298,19 +281,28 @@ public class MenuClass implements Menu {
 
     public void main(){
         while(this.estado == true){
+            if(this.Start == true){
+                this.Start = stream.inicializa();
+            }
             if(this.MenuInicial == true){
+                //limpa_tela();  
                 MostraMenu();
             }
             else{
                 if(this.Visualizar == true){
+                    //limpa_tela();  
                     Visualizar();
                 }else if(this.Inserindo == true){
+                    //limpa_tela();  
                     InserirNovaTarefa();
                 }else if(this.TarefasFeitas == true){
+                    //limpa_tela();  
                     TarefasFeitas();
                 }else if(this.Kanbam == true){
+                    //limpa_tela();  
                     Kanbam();
                 }else if(this.mudandoPrioridade == true){
+                    //limpa_tela();  
                     MudarPrioridade();
                 }
                 else if(this.sair == true){

@@ -1,26 +1,29 @@
 package classes;
 
 public class HandleError {
-    void errorArquivo(){
+    public void errorArquivo(){
         System.out.println("O arquivo não foi encontrado e irá ser criado outra vez");
         //cria arquivo
     }
-    void optInvalida(){
+    public void optInvalida(){
         System.out.println("Opção Invalida");
     }
-    void limiteUltrapassado(){
+    public void limiteUltrapassado(){
         System.out.println("Você digitou mais que 50 caracteres");
     }
-    void idMuitoGrande(){
+    public void idMuitoGrande(){
         System.out.println("ID fora dos limites");
     }
-    void LinhaErrada(){
+    public void LinhaErrada(){
         System.out.println("ERRO NO ARQUIVO SAVE");
     }
-    void Input_invalido(){
+    public void Input_invalido(){
         System.out.println("VOCÊ DIGITOU ALGO INVALIDO");
     }
-    void Ex_err(Exception err){
+    public void Ex_err(Exception err){
         System.out.println(err);
+    }
+    public void save_err(){
+        System.out.println("Erro ao salvar arquivo !");
     }
 }
