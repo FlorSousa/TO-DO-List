@@ -3,19 +3,20 @@ package classes;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Stream {
     private HandleError handleError = new HandleError();
-    private Arq system_save = new Arq();
+    public Arq system_save = new Arq();
     private int linha_mudada;
-
+    final String path_save_system = "C:/Users/getui/Desktop/RPG_Texto/TO-DO-List/data/save_system.txt";
     public boolean inicializa(){
         if(procuraArquivo() == true){
             try{
-                FileReader arquivo = new FileReader("C:/Users/getui/Desktop/RPG_Texto/TO-DO-List/data/save_system.txt");
+                FileReader arquivo = new FileReader(path_save_system);
                 BufferedReader bytesarquivo = new BufferedReader(arquivo);
                 String linha = bytesarquivo.readLine();
     
@@ -61,13 +62,16 @@ public class Stream {
        
     }
     
-    public void Escreve(List<Tarefa> Linhas){
+    public void Escreve(List<String> Linhas){
+        System.out.print("oi");
         try{
-            //adiciona Linha
-            //adiciona 
-            for(Tarefa t:Linhas){
-                //escreve
+            FileWriter fwriter = new FileWriter(path_save_system); 
+            BufferedWriter bwriter = new BufferedWriter(fwriter);
+            for(String t:Linhas){
+                bwriter.write(t);
+                bwriter.flush();
             }
+            bwriter.close();
         }catch(Exception err){
             System.out.println(err);
         }
@@ -176,11 +180,15 @@ public class Stream {
         return todosId;
     }
 
+    public int getIndex(){
+        return linha_mudada;
+    }
     
 
     public boolean procuraArquivo(){
         try{
             FileReader arquivo = new FileReader("C:/Users/getui/Desktop/RPG_Texto/TO-DO-List/data/save_system.txt");
+            arquivo.close();
             return true;
         }catch(Exception err){
             handleError.errorArquivo();

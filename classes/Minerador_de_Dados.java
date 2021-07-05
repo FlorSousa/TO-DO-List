@@ -7,34 +7,45 @@ public class Minerador_de_Dados {
     public void getAtividade(){
 
     }
-    public void mudancaPrioridade(String linha,String novaPrioridade){
+    public String mudancaPrioridade(String linha,String novaPrioridade){
         //inverso de getPrioridade
-        String metade_inicial = "";
-        String metade_final = "";
+        String linha_final = "";
         int estado =1;
         for(int contador_de_letra =0;contador_de_letra<linha.length();contador_de_letra++){
             char atual = linha.charAt(contador_de_letra);
             if(estado==1){
                 if(atual!='|'){
-                    metade_inicial+=atual;
+                    linha_final+=atual;
                 }else{
-                    metade_inicial+='|';
+                    linha_final+='|';
                     estado =2;
                 }
             }else if(estado ==2){
                 if(atual!='|'){
-                    metade_inicial+=atual;
+                    linha_final+=atual;
                 }else{
-                    metade_inicial+='|';
+                    linha_final+='|';
                     estado =3;
                 }
             }else if(estado ==3){
-                //entender
+                linha_final+=novaPrioridade;
+                estado =4;
+            }else if(estado==4){
+                if(atual!='|'){
+                    estado =4;
+                }else{
+                    linha_final += atual;
+                    estado =5;
+                }
             }else{
-                metade_inicial+=atual;
+                if(atual!='#'){
+                    linha_final+=atual;
+                }else{
+                    linha_final+='#';
+                }
             }
         }
-        System.out.println(metade_inicial);
+        return linha_final;
 
     }
     public String getPrioridade(String linha){

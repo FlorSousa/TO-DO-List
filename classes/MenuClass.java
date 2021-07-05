@@ -6,7 +6,7 @@ import java.util.List;
 public class MenuClass implements Menu {
     public List<Tarefa> tarefas = new ArrayList<>();
     private HandleError handleError = new HandleError();
-    public handleFeitas handleFeitas = new handleFeitas();
+    public  HandleFeitas handleFeitas = new HandleFeitas();
     private Minerador_de_Dados miner = new Minerador_de_Dados();
     private Boolean estado = true;
     private Boolean MenuInicial = true;
@@ -212,9 +212,13 @@ public class MenuClass implements Menu {
             System.out.println("    B.Concluida");
             String escolha = leitor.nextLine();
             if(escolha.equalsIgnoreCase("A")){
-                miner.mudancaPrioridade(linha,"DESENVOL");
+                String novaLinha = miner.mudancaPrioridade(linha,"DESENVOL");
+                int index = stream.getIndex();
+                stream.system_save.setNovaLinha(index,novaLinha);
             }else if(escolha.equalsIgnoreCase("B")){
-                miner.mudancaPrioridade(linha,"CONCLUID");
+                String novaLinha = miner.mudancaPrioridade(linha,"CONCLUID");
+                int index = stream.getIndex();
+                stream.system_save.setNovaLinha(index,novaLinha);
             }else{
                 handleError.optInvalida();
             }
@@ -223,9 +227,13 @@ public class MenuClass implements Menu {
             System.out.println("    B.Concluida");
             String escolha = leitor.nextLine();
             if(escolha.equalsIgnoreCase("A")){
-                miner.mudancaPrioridade(linha,"BACKLOG ");
+                String novaLinha = miner.mudancaPrioridade(linha,"BACKLOG ");
+                int index = stream.getIndex();
+                stream.system_save.setNovaLinha(index,novaLinha);
             }else if(escolha.equalsIgnoreCase("B")){
-                miner.mudancaPrioridade(linha,"CONCLUID");
+                String novaLinha = miner.mudancaPrioridade(linha,"CONCLUID");
+                int index = stream.getIndex();
+                stream.system_save.setNovaLinha(index,novaLinha);
             }else{
                 handleError.optInvalida();
             }
@@ -272,7 +280,11 @@ public class MenuClass implements Menu {
     @Override
     public void Sair() {
         limpa_tela();  
-        stream.Escreve(tarefas);
+
+        for(Tarefa t:tarefas){
+            stream.system_save.setLinhas_do_Txt(t.toString());
+        }
+        stream.Escreve(stream.system_save.getLinhas());
         System.out.println("Obrigado por utilizar"); 
         this.estado = false;
 
