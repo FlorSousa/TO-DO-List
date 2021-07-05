@@ -35,7 +35,7 @@ public class Tarefa {
 
     @Override
     public String toString(){
-        return "#"+getId() +"|"+getAtividade() +"|"+ getPrioridade() + "|"+getAutor()+"#";
+        return "#"+getId() +"|"+getAtividade() +"|"+ getPrioridade() + "|"+getAutor()+"#"+"\n"+"#________|_________________________________________|________|_________________________________________#";
     }
 
 }

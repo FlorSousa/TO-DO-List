@@ -46,10 +46,10 @@ public class Stream {
         System.out.println(separador);
     }
     public void ImprimeKanbam(){
-        String hashtag ="##########################################################################################################################################################";
-        String header = "#Backlog                                          |Desenvolvimento                                    |Completa                                          #";
-        String vazio =  "#                                                 |                                                   |                                                  #";
-        String separado="#_________________________________________________|___________________________________________________|__________________________________________________#"; 
+        String hashtag ="#################################################################################################################################################################";
+        String header  ="#Backlog                                              |Desenvolvimento                                      |Completa                                            ";				
+        String vazio =  "#                                                     |                                                     |                                                  +#";
+        String separado="#_____________________________________________________|_____________________________________________________|___________________________________________________#"; 
         System.out.println(hashtag);
         System.out.println(vazio);
         System.out.println(header);
@@ -63,12 +63,11 @@ public class Stream {
     }
     
     public void Escreve(List<String> Linhas){
-        System.out.print("oi");
         try{
             FileWriter fwriter = new FileWriter(path_save_system); 
             BufferedWriter bwriter = new BufferedWriter(fwriter);
             for(String t:Linhas){
-                bwriter.write(t);
+                bwriter.write(t+"\n");
                 bwriter.flush();
             }
             bwriter.close();
@@ -139,7 +138,14 @@ public class Stream {
         boolean retorno = false;
         int check_adicional =0;
         int numero_index = 0;
+        int tamanho_fixo_id = 8;
         int[] conjunto = new int[2];
+        if(IdSelecionado.length()<tamanho_fixo_id) {
+        	int numBrancos = tamanho_fixo_id - IdSelecionado.length();
+        	for(int contador=0;contador<numBrancos;contador++) {
+        		IdSelecionado+=" ";
+        	}
+        }
         for(int k=0;k<lista.length;k++){
            retorno = (IdSelecionado.equals(lista[k])) ? true : false;
             if(retorno == true){
@@ -159,8 +165,10 @@ public class Stream {
     private String pegaId(List<String> linha){
         int estado = 1;
         String todosId = "";
+        
+        
         for(String l:linha){
-            for(int cont =0;cont<10;cont++){
+            for(int cont =0;cont<=8;cont++){
                 char caractere_atual = l.charAt(cont);
                 if(estado == 1){
                     if(caractere_atual =='#'){
@@ -174,8 +182,8 @@ public class Stream {
                         }
                     }
                 }
-                
-            }            
+               
+            }
         }
         return todosId;
     }
