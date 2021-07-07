@@ -2,6 +2,7 @@ package classes;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -12,8 +13,11 @@ public class Stream {
     private HandleError handleError = new HandleError();
     public Arq system_save = new Arq();
     private int linha_mudada;
-    final String path_save_system = "C:/Users/getui/Desktop/RPG_Texto/TO-DO-List/data/save_system.txt";
+    String basePath = new File("").getAbsolutePath();
+    final String path_save_system = basePath+"/data/save_system.txt";
+    
     public boolean inicializa(){
+    	System.out.println(path_save_system);
         if(procuraArquivo() == true){
             try{
                 FileReader arquivo = new FileReader(path_save_system);
@@ -35,31 +39,40 @@ public class Stream {
         
     }
 
-    public void desenhaHeader(){
-        String hashtag ="#######################################################################################################";
-        String vazio =  "#        |                                         |        |                                         #";
-        String separador = "#________|_________________________________________|________|_________________________________________#";
-        String header = "#   id   |               Atividade                 | PRIOR. |                autor                    #";
-        System.out.println(hashtag);
-        System.out.println(vazio);
-        System.out.println(header);
-        System.out.println(separador);
+    public String desenhaHeader(){
+        String header = "ID___|Atividade_________________________________|PRIORIDADE|AUTOR__________________________________";
+        return header;
+        
     }
-    public void ImprimeKanbam(){
-        String hashtag ="#################################################################################################################################################################";
-        String header  ="#Backlog                                              |Desenvolvimento                                      |Completa                                            ";				
-        String vazio =  "#                                                     |                                                     |                                                  +#";
-        String separado="#_____________________________________________________|_____________________________________________________|___________________________________________________#"; 
-        System.out.println(hashtag);
-        System.out.println(vazio);
-        System.out.println(header);
-        System.out.println(separado);
+    
+    public String ImprimeKanbam(){
+        String header  ="Backlog                                              |Desenvolvimento                                      |Completa                                            ";				
+        return header;
     }
-    public void imprimelinhas(){
-        for(String l:system_save.getLinhas()){
-            System.out.println(l);
+    
+    public String cortaTag(String l) {
+    	String linha = "";
+    	int estado = 1;
+    	for(int k=0;k<l.length();k++) {
+    		char atual = l.charAt(k);
+    		if(atual != '#') {
+    			linha+=atual;
+    		}
+    	}
+    	return linha;
+    }
+    
+    public String imprimelinhas(){
+        String total = "";
+        int c =0;
+    	for(String l:system_save.getLinhas()){
+            if(c%2==0) {
+            	String noTag = cortaTag(l) ;
+            	total+=noTag+"\n";
+            }
+            c++;
         }
-       
+       return total;
     }
     
     public void Escreve(List<String> Linhas){
@@ -72,7 +85,7 @@ public class Stream {
             }
             bwriter.close();
         }catch(Exception err){
-            System.out.println(err);
+            handleError.Input_invalido();
         }
     }
     
@@ -80,7 +93,7 @@ public class Stream {
         int c =0;
         List<String> linhasValidas = new ArrayList<>();
         boolean error = true;
-        String fim ="NÃ£o existe";
+        String fim ="Não Existe";
         for(String linha:system_save.getLinhas()){
             if(c%2==0){
                 linhasValidas.add(linha);
@@ -92,13 +105,12 @@ public class Stream {
         String[] lista_ids = dividirEConquistar(TodosId);
         int[] arr_dados = verifica_igualdade(lista_ids, id);
         int numero_da_linha = Leitor_de_verifica_igualdade(arr_dados);
-        error = (numero_da_linha>0)? false:true;
-        if(error==false){
+        error = (numero_da_linha>=0)?true:false;
+        if(error==true){
             String linha_encontrada = linhasValidas.get(numero_da_linha);
             linha_mudada = numero_da_linha;
             fim = linha_encontrada;
         }
-
         return fim;
         
     }
@@ -114,16 +126,16 @@ public class Stream {
 
     private String[] dividirEConquistar(String todos){   
         String buffer = "";
-        int numero_de_ids = todos.length()/8;
+        int numero_de_ids = todos.length()/4;
         String[] arr_id = new String[numero_de_ids];
         int index_atual = 0;
         
         for(int k =0;k<todos.length();k++){
             char letra = todos.charAt(k);
-            if(buffer.length()<8){
+            if(buffer.length()<4){
                 buffer+=letra;
             }
-            if(buffer.length()==8){
+            if(buffer.length()==4){
                 if(index_atual<numero_de_ids){
                     arr_id[index_atual]= buffer;
                     index_atual++;
@@ -138,22 +150,17 @@ public class Stream {
         boolean retorno = false;
         int check_adicional =0;
         int numero_index = 0;
-        int tamanho_fixo_id = 8;
+        
         int[] conjunto = new int[2];
-        if(IdSelecionado.length()<tamanho_fixo_id) {
-        	int numBrancos = tamanho_fixo_id - IdSelecionado.length();
-        	for(int contador=0;contador<numBrancos;contador++) {
-        		IdSelecionado+=" ";
-        	}
-        }
         for(int k=0;k<lista.length;k++){
-           retorno = (IdSelecionado.equals(lista[k])) ? true : false;
-            if(retorno == true){
+        	retorno = (IdSelecionado.equals(lista[k])) ? true : false;
+        	if(retorno == true){
                 numero_index = k;
                 check_adicional =1;
                 conjunto[0] = k;
                 conjunto[1] = check_adicional;
-            }
+                linha_mudada = numero_index;
+        	}
             else{
                 conjunto[0] = numero_index;
                 conjunto[1] = check_adicional;
@@ -168,7 +175,7 @@ public class Stream {
         
         
         for(String l:linha){
-            for(int cont =0;cont<=8;cont++){
+            for(int cont =0;cont<=4;cont++){
                 char caractere_atual = l.charAt(cont);
                 if(estado == 1){
                     if(caractere_atual =='#'){
@@ -185,6 +192,7 @@ public class Stream {
                
             }
         }
+     
         return todosId;
     }
 
@@ -203,4 +211,5 @@ public class Stream {
             return false;
         }
     }
+   
 }

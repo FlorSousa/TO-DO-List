@@ -5,7 +5,7 @@ public interface Menu {
     public boolean InserirNovaTarefa();
     public boolean MostraMenu();
     public void TarefasFeitas();
-    public boolean Kanbam();
+    public void ExibirAutores();
     public void MudarPrioridade();
     public void Sair();
 }

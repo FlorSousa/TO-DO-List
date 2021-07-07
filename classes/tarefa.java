@@ -13,10 +13,6 @@ public class Tarefa {
         this.Autor = Autor;
     }
 
-    public void SalvaTarefa(){
-        //pass
-    }
-
     public String getId(){
         return this.id;
     }
@@ -35,7 +31,7 @@ public class Tarefa {
 
     @Override
     public String toString(){
-        return "#"+getId() +"|"+getAtividade() +"|"+ getPrioridade() + "|"+getAutor()+"#"+"\n"+"#________|_________________________________________|________|_________________________________________#";
+        return "#"+getId() +"|"+getAtividade() +"|"+ getPrioridade() + "|"+getAutor()+"#"+"\n"+"#____|_________________________________________|________|_________________________________________#";
     }
 
 }

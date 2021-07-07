@@ -1,14 +1,40 @@
 package classes;
 
 public class Minerador_de_Dados {
-    public void getAutor(){
-
+    public String getAutor(String linha){
+    	int estado =1;
+    	String result = "";
+    	for(int contador_de_letra=0;contador_de_letra<linha.length();contador_de_letra++) {
+    		char atual = linha.charAt(contador_de_letra);
+    		if(estado ==1) {
+    			if(atual =='|') {
+    				estado =2;
+    			}
+    		}else if(estado ==2) {
+    			if(atual == '|') {
+    				estado =3;
+    			}
+    		}else if(estado ==3) {
+    			if(atual == '|') {
+    				estado =4;
+    			}
+    		}else if(estado ==4) {
+    			if(atual !='#') {
+    				if(atual !='_') {
+    					result+=atual;
+    					estado =4;
+    				}
+    			}
+    		}
+    			
+    	}
+    	return result;
     }
     public void getAtividade(){
 
     }
+    
     public String mudancaPrioridade(String linha,String novaPrioridade){
-        //inverso de getPrioridade
         String linha_final = "";
         int estado =1;
         for(int contador_de_letra =0;contador_de_letra<linha.length();contador_de_letra++){
@@ -45,8 +71,8 @@ public class Minerador_de_Dados {
                 }
             }
         }
-        return linha_final;
-
+        
+        return "#"+linha_final+"#";
     }
     public String getPrioridade(String linha){
         int estado =1;
